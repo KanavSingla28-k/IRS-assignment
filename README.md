@@ -1,9 +1,5 @@
 # Retrieval Desk — Assignment 1 workbench variation
 
-**Branch:** `variation/retrieval-workbench` · The original project/chat interface remains on `main`.
-
-This variation replaces the sidebar-and-conversation layout with a top-navigation retrieval workbench, a filterable document library, and a dedicated comparison ledger. Search algorithms, preprocessing, upload validation, ranking, and local storage remain compatible with the original app.
-
 A local Python/Flask application implementing both Q1 and Q2. The browser interface lets you add documents, upload several text files, inspect term frequencies, and compare exact and partial-word retrieval side by side.
 
 ## Run
