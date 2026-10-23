@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An experimental document retrieval workbench: search your sources, inspect term frequencies, and compare indexing techniques.">
+  <title>Retrieval Desk · Document search</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="#search"><span class="brand-symbol" aria-hidden="true">r<span>↗</span></span><span>Retrieval<span class="brand-light">Desk</span></span></a>
+      <nav aria-label="Workbench navigation" class="main-nav">
+        <a href="#search" data-route="search" aria-current="page">Search</a>
+        <a href="#library" data-route="library">Library <span id="nav-count">0</span></a>
+        <a href="#compare" data-route="compare">Compare</a>
+      </nav>
+      <div class="masthead-actions"><span class="local-label"><span class="live-dot"></span> LOCAL COLLECTION</span><button class="button light-button" data-open-add>＋ Add documents</button></div>
+    </div>
+  </header>
+  <main id="main-content" tabindex="-1" class="container">
+    <div id="status" class="status-line" role="status" aria-live="polite">Ready to index. Add documents or load the example collection.</div>
+    <section id="search-view" class="view" aria-labelledby="search-heading">
+      <div class="page-intro"><div><p class="eyebrow">DOCUMENT RETRIEVAL / WORKBENCH</p><h1 id="search-heading">Find the signal<span>.</span></h1><p class="lede">Your documents. Two indexes. One place to see what matches.</p></div><span class="edition-tag">IRS ASSIGNMENT 01<br>ALTERNATIVE EDITION</span></div>
+      <div class="search-console">
+        <div class="console-label"><span class="console-dot"></span> QUERY CONSOLE <span class="console-shortcut">⌘ / Ctrl K to focus</span></div>
+        <form id="search-form" aria-label="Search documents">
+          <label class="sr-only" for="query">Keywords or partial words</label>
+          <div class="query-row"><span class="query-symbol" aria-hidden="true">⌕</span><input id="query" maxlength="500" required autocomplete="off" placeholder="Enter a keyword, a fragment, or several terms…"><button id="search-submit" class="button primary-button" type="submit">Run search <span aria-hidden="true">↗</span></button></div>
+        </form>
+        <div class="query-examples"><span>TRY</span><button data-query="computer">computer <span>exact</span></button><button data-query="compu">compu <span>partial</span></button><button data-query="search engine">search engine <span>multi-term</span></button></div>
+      </div>
+      <div class="metric-strip" aria-label="Collection statistics">
+        <div><strong id="document-count">0</strong><span>Documents</span></div><div><strong id="stem-count">0</strong><span>Unique stems</span></div><div><strong id="word-count">0</strong><span>Source words</span></div><div><strong id="gram-count">0</strong><span>Character grams</span></div>
+      </div>
+      <div class="search-layout">
+        <section class="results-area" aria-labelledby="results-heading">
+          <div class="section-heading"><div><p class="eyebrow">RETRIEVAL OUTPUT</p><h2 id="results-heading">The results live here.</h2></div><span id="result-total" class="small-badge">Ready</span></div>
+          <div id="mode-controls" class="mode-controls" role="group" aria-label="Result index"><button data-mode="inverted" aria-pressed="true">Inverted index <span id="exact-count">—</span></button><button data-mode="ngram" aria-pressed="false">N-gram index <span id="partial-count">—</span></button></div>
+          <div id="search-empty" class="search-empty"><div class="index-illustration" aria-hidden="true"><span class="word-block">word</span><span class="index-line">→</span><div><span>document_01.txt</span><span>document_02.txt</span><span>document_03.txt</span></div></div><h3>A word is all it takes.</h3><p>Search a keyword for exact stem matches, or a word fragment to explore the N-gram index.</p><button id="load-samples" class="button secondary-button" data-mutation>Load example collection <span aria-hidden="true">↗</span></button></div>
+          <div id="results" class="result-list" hidden></div>
+          <p id="result-note" class="method-note" hidden>Ranked by total query-term frequency. Any term can match; repeated query terms count once. Open a title to read the source.</p>
+        </section>
+        <aside class="inspector" aria-label="Search diagnostics">
+          <div class="inspector-heading"><span class="console-dot"></span><h2>Index snapshot</h2><span class="small-badge">LIVE</span></div>
+          <p id="snapshot-query" class="snapshot-query">Waiting for your first query</p>
+          <div class="snapshot-row"><div><span class="index-letter">I</span><strong>Inverted index</strong><span>Exact stems</span></div><strong id="exact-time">—</strong></div>
+          <div class="snapshot-row"><div><span class="index-letter partial-letter">N</span><strong>N-gram index</strong><span>Word fragments</span></div><strong id="partial-time">—</strong></div>
+          <p class="inspector-note">Median of 50 warm runs. Includes preprocessing, lookup and ranking. Network and rendering excluded; small differences may be noise.</p>
+          <a href="#compare" class="compare-link">Open comparison ledger <span aria-hidden="true">↗</span></a>
+          <div class="inspector-method"><h3>The retrieval pipeline</h3><ol><li><span>Tokenize</span>Lowercase words; split punctuation.</li><li><span>Normalize</span>Remove stop words; stem exact terms.</li><li><span>Retrieve</span>Read postings; verify partial matches.</li><li><span>Rank</span>Count frequencies across query terms.</li></ol></div>
+        </aside>
+      </div>
+      <section class="recent-section" aria-labelledby="recent-heading"><h2 id="recent-heading">Recent queries <span>This session</span></h2><div id="recent-queries" class="recent-queries"><span class="muted">Your searches will appear here.</span></div></section>
+    </section>
+
+    <section id="library-view" class="view" aria-labelledby="library-heading" hidden>
+      <div class="page-intro"><div><p class="eyebrow">THE SOURCE COLLECTION</p><h1 id="library-heading">Your source material<span>.</span></h1><p class="lede">Every file is a starting point. Add, browse, and read your documents.</p></div><button class="button primary-button" data-open-add>＋ Add documents</button></div>
+      <div class="library-toolbar"><div><h2>Document library</h2><span id="library-count" class="muted">0 documents</span></div><div class="filter-field"><label class="sr-only" for="library-filter">Filter document titles</label><input type="search" id="library-filter" placeholder="Filter document titles…"></div></div>
+      <div id="library-grid" class="library-grid"></div>
+      <div id="library-empty" class="large-empty"><span class="empty-symbol" aria-hidden="true">＋</span><h2>A collection starts with one document.</h2><p>Paste your notes or upload UTF-8 text files. Both indexes update automatically.</p><button class="button primary-button" data-open-add>Add your first document</button></div>
+      <p class="library-footnote">Local files only · UTF-8 .txt uploads · 30 files per upload · 5 MB request limit</p>
+    </section>
+
+    <section id="compare-view" class="view" aria-labelledby="compare-heading" hidden>
+      <div class="page-intro"><div><p class="eyebrow">THE COMPARISON LEDGER</p><h1 id="compare-heading">Put the indexes to the test<span>.</span></h1><p class="lede">Compare exact keywords, word fragments, and multi-term queries.</p></div><a class="button secondary-button" href="#search">Run another query ↗</a></div>
+      <div id="benchmark-empty" class="large-empty"><span class="empty-symbol" aria-hidden="true">⇄</span><h2>No measurements yet.</h2><p>Run a search to record real result counts and median timings here.</p><a href="#search" class="button primary-button">Go to search</a></div>
+      <div id="benchmark-report" hidden>
+        <div class="section-heading"><h2>Query benchmarks</h2><span class="small-badge">CURRENT SESSION</span></div>
+        <div class="table-scroll"><table class="benchmark-table"><caption>Latest run per query. Measurements from the same collection version; adding sources resets the ledger before refreshing the active query.</caption><thead><tr><th scope="col">Query</th><th scope="col">Exact matches</th><th scope="col">Partial matches</th><th scope="col">Inverted time</th><th scope="col">N-gram time</th><th scope="col">Shared docs</th></tr></thead><tbody id="benchmark-body"></tbody></table></div>
+        <section class="coverage-section"><div class="section-heading"><div><p class="eyebrow">DOCUMENT COVERAGE</p><h2 id="coverage-heading"></h2></div><label class="coverage-label">Inspect query<select id="coverage-query" aria-label="Query for document coverage"></select></label></div><div class="table-scroll"><table class="coverage-table"><caption>Which documents each index retrieved for the selected query.</caption><thead><tr><th scope="col">Document</th><th scope="col">Inverted frequency</th><th scope="col">N-gram frequency</th></tr></thead><tbody id="coverage-body"></tbody></table></div></section>
+        <p class="method-note">Timings are median milliseconds over 50 warm in-process searches, not end-to-end latency. Different preprocessing and candidate sets affect both speed and results. This ledger holds up to 20 distinct queries and clears when the page reloads.</p>
+      </div>
+    </section>
+    <footer class="page-footer"><span class="footer-brand">Retrieval Desk</span><span>BUILT FOR INFORMATION RETRIEVAL · ASSIGNMENT 01</span><span><span class="live-dot"></span> Local. Indexed. Searchable.</span></footer>
+  </main>
+
+  <dialog id="reader-dialog" class="reader-dialog" aria-labelledby="document-title">
+    <div class="dialog-heading"><p class="eyebrow">SOURCE READER</p><button class="close-button" data-close="reader-dialog" aria-label="Close document">×</button></div><h2 id="document-title"></h2><p id="document-meta" class="muted"></p><pre id="document-content"></pre>
+  </dialog>
+  <dialog id="add-dialog" aria-labelledby="add-dialog-title">
+    <div class="dialog-heading"><div><p class="eyebrow">GROW YOUR COLLECTION</p><h2 id="add-dialog-title">Add source material</h2></div><button class="close-button" data-close="add-dialog" aria-label="Close add documents">×</button></div>
+    <p class="dialog-description">New documents are saved locally and indexed immediately.</p>
+    <form id="add-form"><label for="title">Document title</label><input id="title" name="title" required maxlength="200" placeholder="e.g. Notes on information retrieval"><label for="text">Document text</label><textarea id="text" name="text" rows="5" required placeholder="Paste your source text…"></textarea><button type="submit" class="button primary-button" data-mutation>Add document</button></form>
+    <div class="dialog-divider">or upload text files</div>
+    <form id="upload-form"><label for="files">UTF-8 .txt files</label><input id="files" type="file" name="files" accept=".txt,text/plain" multiple required><p class="field-hint">Up to 30 files · 5 MB total request size</p><button type="submit" class="button secondary-button" data-mutation>Upload & index</button></form>
+    <p id="dialog-status" class="dialog-status" role="status" aria-live="polite"></p>
+  </dialog>
+</body>
+</html>
